@@ -1,8 +1,15 @@
-export default {
-  NODE_ENV: "development",
-  bcrypt_salt_rounds: 11,
-  port: 5000,
-  database_url: 'mongodb+srv://schoolTest:LHgCVoFqax3MX7XP@cluster0.fobkzbd.mongodb.net/schoolTest?retryWrites=true&w=majority&appName=Cluster0',
-  token_cookie_key: "auth_token",
-};
+import dotenv from "dotenv";
+dotenv.config();
 
+export default {
+  NODE_ENV: process.env.NODE_ENV,
+  bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUND,
+  port: process.env.PORT,
+  db_url: process.env.DB_URL,
+  token_cookie_key: "auth_token",
+  URL: process.env.FRONTEND_URL,
+  jwt_access_token: process.env.ACCESS_TOKEN_SECRET,
+  jwt_refresh_token: process.env.ACCESS_REFRESH_SECRET,
+  user_name: process.env.EMAIL_USER,
+  password: process.env.EMAIL_PASS,
+};

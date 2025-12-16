@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
 type IApiResponse<T> = {
-  status_code: number;
+  statusCode: number;
   success: boolean;
   message?: string | null;
   meta?: {
@@ -14,13 +14,13 @@ type IApiResponse<T> = {
 
 const sendResponse = <T>(res: Response, data: IApiResponse<T>): void => {
   const responseData: IApiResponse<T> = {
-    status_code: data.status_code,
+    statusCode: data.statusCode,
     success: data.success,
     message: data.message || null,
     meta: data.meta || null || undefined,
     data: data.data || null,
   };
-  res.status(data.status_code).json(responseData);
+  res.status(data.statusCode).json(responseData);
 };
 
 export default sendResponse;

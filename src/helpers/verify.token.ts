@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import ApiError from "../errors/ApiError";
 import { jwtHelpers } from "./jwtHelpers";
-import { UserModel } from "../app/modules/authentication/user/user.model";
+import { Users } from "../app/modules/auth/auth.model";
 
 export const verifyToken = (permission: string | "self"): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -20,9 +20,9 @@ export const verifyToken = (permission: string | "self"): RequestHandler => {
 
       // if permission self assign on getUser or get my profile route, no need to check permission
       if (permission === "self") {
-        const user = await UserModel.findById(userId).select([
-          "-user_password",
-          "-user_pole",
+        const user = await Users.findById(userId).select([
+          "-password",
+          "-pole",
           "-__v",
         ]);
 
@@ -33,9 +33,9 @@ export const verifyToken = (permission: string | "self"): RequestHandler => {
       }
 
       // ROLE CHECK
-      const user = await UserModel.findById(userId)
-        .populate("user_role")
-        .select("-user_password");
+      const user = await Users.findById(userId)
+        .populate("role")
+        .select("-password");
 
       if (!user)
         throw new ApiError(
@@ -43,7 +43,7 @@ export const verifyToken = (permission: string | "self"): RequestHandler => {
           "Unable to verify your credentials. Please log in again."
         );
 
-      const roleDoc = user.user_role;
+      const roleDoc = user.role;
       const roleData =
         typeof (roleDoc as any)?.toObject === "function"
           ? (roleDoc as any).toObject()
