@@ -9,7 +9,6 @@ const app: Application = express();
 
 const corsOptions = {
   origin: [
-    "http://localhost:5173",
     "https://college-frontend-jobtask.vercel.app"
   ],
   credentials: true,
