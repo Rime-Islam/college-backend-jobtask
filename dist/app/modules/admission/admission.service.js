@@ -7,15 +7,18 @@ exports.AdmissionService = void 0;
 const admission_model_1 = require("./admission.model");
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const http_status_1 = __importDefault(require("http-status"));
-const createAdmission = async (payload) => {
+const createAdmission = async (payload, id) => {
     const exists = await admission_model_1.Admission.findOne({
-        userId: payload.userId,
+        userId: id,
         collegeId: payload.collegeId,
     });
     if (exists) {
         throw new ApiError_1.default(http_status_1.default.CONFLICT, "Admission already exists for this user and college!");
     }
-    const result = await admission_model_1.Admission.create(payload);
+    const result = await admission_model_1.Admission.create({
+        ...payload,
+        userId: id,
+    });
     return result;
 };
 const getAllAdmissions = async () => {
@@ -34,10 +37,12 @@ const getSingleAdmission = async (id) => {
     }
     return result;
 };
-const getAdmissionsByUser = async (userId) => {
-    const result = await admission_model_1.Admission.find({ userId })
+const getAdmissionsByUser = async (id) => {
+    const result = await admission_model_1.Admission.find({ userId: id })
+        .populate("userId")
         .populate("collegeId")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .lean();
     return result;
 };
 const updateAdmissionStatus = async (id, status) => {

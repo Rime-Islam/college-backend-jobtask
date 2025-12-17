@@ -9,12 +9,13 @@ const config_1 = __importDefault(require("./config"));
 async function main() {
     try {
         await mongoose_1.default.connect(config_1.default.db_url);
+        console.log("✅ Database is running");
         app_1.default.listen(config_1.default.port, () => {
-            console.log(`Example app listening on port ${config_1.default.port}`);
+            console.log(`🚀 App is listening on port: ${config_1.default.port}`);
         });
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        console.error("❌ Failed to connect database", err);
     }
 }
 main();

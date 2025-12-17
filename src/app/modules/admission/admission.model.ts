@@ -55,7 +55,6 @@ const AdmissionSchema = new Schema<IAdmission>(
 
     candidateImage: {
       type: ImageSchema,
-      required: true,
     },
 
     status: {

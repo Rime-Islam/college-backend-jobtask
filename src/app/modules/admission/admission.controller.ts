@@ -5,7 +5,8 @@ import sendResponse from "../../../shared/sendResponse";
 import { AdmissionService } from "./admission.service";
 
 const createAdmission = catchAsync(async (req: Request, res: Response) => {
-  const result = await AdmissionService.createAdmission(req.body);
+  const id = req.user;
+  const result = await AdmissionService.createAdmission(req.body,id as any);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -42,9 +43,9 @@ const getSingleAdmission = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAdmissionsByUser = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const id = req.user;
 
-  const result = await AdmissionService.getAdmissionsByUser(userId);
+  const result = await AdmissionService.getAdmissionsByUser(id as any);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -3,9 +3,9 @@ import { IAdmission } from "./admission.interface";
 import ApiError from "../../../errors/ApiError";
 import httpStatus from "http-status";
 
-const createAdmission = async (payload: IAdmission) => {
+const createAdmission = async (payload: IAdmission, id: string) => {
   const exists = await Admission.findOne({
-    userId: payload.userId,
+    userId: id,
     collegeId: payload.collegeId,
   });
 
@@ -16,7 +16,10 @@ const createAdmission = async (payload: IAdmission) => {
     );
   }
 
-  const result = await Admission.create(payload);
+  const result = await Admission.create({
+    ...payload,
+    userId: id,
+  });
   return result;
 };
 
@@ -41,10 +44,12 @@ const getSingleAdmission = async (id: string) => {
   return result;
 };
 
-const getAdmissionsByUser = async (userId: string) => {
-  const result = await Admission.find({ userId })
+const getAdmissionsByUser = async (id: string) => {
+  const result = await Admission.find({ userId: id })
+    .populate("userId")
     .populate("collegeId")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean();
 
   return result;
 };

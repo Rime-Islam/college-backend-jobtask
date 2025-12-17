@@ -1,7 +1,7 @@
 {
   "name": "college_backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,7 +13,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.952.0",
     "@vercel/node": "^5.5.15",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
@@ -36,7 +35,6 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
-    "@types/multer": "^2.0.0",
     "@types/node": "^25.0.2",
     "@types/nodemailer": "^7.0.4",
     "ts-node-dev": "^2.0.0",

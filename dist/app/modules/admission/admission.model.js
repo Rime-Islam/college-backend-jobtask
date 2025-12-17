@@ -47,7 +47,6 @@ const AdmissionSchema = new mongoose_1.Schema({
     },
     candidateImage: {
         type: auth_model_1.ImageSchema,
-        required: true,
     },
     status: {
         type: String,

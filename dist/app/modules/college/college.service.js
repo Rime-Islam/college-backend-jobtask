@@ -7,17 +7,9 @@ exports.CollegeService = void 0;
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const college_model_1 = require("./college.model");
 const http_status_1 = __importDefault(require("http-status"));
-const createCollege = async (collegePayload, collegeImage, collegeImage_key) => {
+const createCollege = async (collegePayload) => {
     try {
-        if (!collegeImage || !collegeImage_key) {
-            throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'College image is required');
-        }
-        // Add image to payload
-        collegePayload.image = {
-            location: collegeImage,
-            key: collegeImage_key,
-        };
-        const result = await college_model_1.College.create(collegePayload);
+        const result = await college_model_1.College.create({ ...collegePayload });
         return result;
     }
     catch (error) {

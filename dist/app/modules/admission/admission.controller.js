@@ -9,7 +9,8 @@ const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const admission_service_1 = require("./admission.service");
 const createAdmission = (0, catchAsync_1.default)(async (req, res) => {
-    const result = await admission_service_1.AdmissionService.createAdmission(req.body);
+    const id = req.user;
+    const result = await admission_service_1.AdmissionService.createAdmission(req.body, id);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.CREATED,
         success: true,
@@ -37,8 +38,8 @@ const getSingleAdmission = (0, catchAsync_1.default)(async (req, res) => {
     });
 });
 const getAdmissionsByUser = (0, catchAsync_1.default)(async (req, res) => {
-    const { userId } = req.params;
-    const result = await admission_service_1.AdmissionService.getAdmissionsByUser(userId);
+    const id = req.user;
+    const result = await admission_service_1.AdmissionService.getAdmissionsByUser(id);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

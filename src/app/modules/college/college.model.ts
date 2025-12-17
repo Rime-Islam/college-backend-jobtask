@@ -93,7 +93,7 @@ const CollegeSchema = new Schema<ICollege>(
 
     image: {
       type: ImageSchema,
-      required: true,
+
     },
 
     rating: {

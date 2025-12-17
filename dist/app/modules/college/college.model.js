@@ -80,7 +80,6 @@ const CollegeSchema = new mongoose_1.Schema({
     },
     image: {
         type: auth_model_1.ImageSchema,
-        required: true,
     },
     rating: {
         type: Number,
