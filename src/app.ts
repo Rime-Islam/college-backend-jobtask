@@ -7,7 +7,15 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 
 const app: Application = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: [
+    "http://localhost:5173"
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(morgan("dev"));
 
@@ -17,6 +25,6 @@ app.get("/", (_req, res) => {
   res.send("Server is running 🚀");
 });
 
-app.use(globalErrorHandler);
+// app.use(globalErrorHandler);
 
 export default app;

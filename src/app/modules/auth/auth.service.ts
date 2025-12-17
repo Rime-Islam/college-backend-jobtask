@@ -5,6 +5,7 @@ import ApiError from "../../../errors/ApiError";
 import config from "../../../config";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import { resetPasswordEmail } from "../../utils/sendEmail";
+import bcrypt from "bcrypt";
 
 const register = async (payload: IUsers) => {
   const user = await Users.findOne({ email: payload.email });
@@ -12,7 +13,11 @@ const register = async (payload: IUsers) => {
   if (user) {
     throw new ApiError(httpStatus.CONFLICT, "User already exists!");
   }
-  const newUser = await Users.create(payload);
+  const hashedPassword = await bcrypt.hash(payload.password, 10);
+  const newUser = await Users.create({
+    ...payload,
+    password: hashedPassword
+  });
   return newUser;
 };
 
@@ -79,29 +84,28 @@ const forgetPassword = async (payload: TUserSignin) => {
   const token = `${accessToken}`;
 
   const url = config.URL;
-  const URL = `${url}/auth/forget-password/${id}/${token}`;
+  const URL = `${url}/auth/reset-password/${id}/${token}`;
 
-  await resetPasswordEmail(email, URL, name);
+  await resetPasswordEmail(email, URL);
 
   return {
-    name,
     email,
   };
 };
 
 const userPasswordReset = async (payload: {
-  id: string;
   token: string;
+  userId: string;
   password: string;
 }) => {
-  const user = await Users.findOne({ _id: payload.id });
+  const user = await Users.findOne({ _id: payload.userId });
 
   if (!user) {
     throw new ApiError(httpStatus.CONFLICT, "User not exists!");
   }
 
   const token = payload?.token;
-  const id = payload?.id;
+  const id = payload?.userId;
   const password = payload?.password;
 
   const secretKey = config.jwt_access_token as string;

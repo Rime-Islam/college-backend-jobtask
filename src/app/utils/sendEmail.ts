@@ -24,13 +24,13 @@ export const sendEmail = async (mailOptions: any) => {
 };
 
 // reset password Email Template
-export const resetPasswordEmail = async (email: string, URL: string, name: string) => {
+export const resetPasswordEmail = async (email: string, URL: string) => {
     const mailOptions = {
         from: `"College" <${config.user_name}>`,
         to: email,
         subject: 'Password Reset Request',
         text: `
-        Dear ${name},
+        Dear User,
   
         We received a request to reset the password for your College account. To complete the process, please click on the link below.
   
@@ -45,7 +45,7 @@ export const resetPasswordEmail = async (email: string, URL: string, name: strin
               `,
         html: `
               <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                  <p>Dear ${name},</p>
+                  <p>Dear User,</p>
                   <p>We received a request to reset the password for your College account. To complete the process, please click on the link below:</p>
                   <p> <a href="${URL}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #1a73e8; text-decoration: none; border-radius: 5px;">
                   Reset your password
@@ -59,5 +59,5 @@ export const resetPasswordEmail = async (email: string, URL: string, name: strin
               </div>
               `
     };
-   await sendEmail(mailOptions);
+    sendEmail(mailOptions);
 };

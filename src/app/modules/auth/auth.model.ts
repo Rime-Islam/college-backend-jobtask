@@ -31,7 +31,7 @@ const UserSchema = new Schema<IUsers>(
     role: {
       type: String,
       enum: ["admin", "student"],
-      required: true,
+      default: "student"
     },
 
     profileImage: {
