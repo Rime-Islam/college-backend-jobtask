@@ -7,9 +7,12 @@ const router = Router();
 
 router.post(
   '/',
-  FileUploadHelper.ImageUpload.fields([{ name: 'image', maxCount: 1 }]),
+  FileUploadHelper.ImageUpload.fields([
+    { name: 'image', maxCount: 1 },
+  ]),
   CollegeController.createCollege
 );
+
 router.get("/", CollegeController.getAllColleges);
 router.get("/:id", CollegeController.getCollegeById);
 router.patch("/:id", CollegeController.updateCollege);

@@ -20,10 +20,6 @@ const EventSchema = new Schema(
         type: String, 
         required: true 
     },
-    image: {
-      type: ImageSchema,
-      required: false,
-    },
     category: {
       type: String,
       enum: ["cultural", "academic", "sports", "technical", "other"],
@@ -126,12 +122,6 @@ const CollegeSchema = new Schema<ICollege>(
     sports: {
       type: [SportSchema],
       default: [],
-    },
-
-    numberOfResearch: {
-      type: Number,
-      required: true,
-      min: 0,
     },
 
     location: {

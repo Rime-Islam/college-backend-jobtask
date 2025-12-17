@@ -5,10 +5,22 @@ import httpStatus from "http-status";
 
 const createCollege = async (
   collegePayload: ICollege,
+  collegeImage: string | undefined,
+  collegeImage_key: string | undefined
 ) => {
   try {
-      const result = await College.create({ ...collegePayload });
-      return result;
+    if (!collegeImage || !collegeImage_key) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'College image is required');
+    }
+
+    // Add image to payload
+    collegePayload.image = {
+      location: collegeImage,
+      key: collegeImage_key,
+    };
+
+    const result = await College.create(collegePayload);
+    return result;
   } catch (error) {
     console.error('Error creating college:', error);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Error creating college');

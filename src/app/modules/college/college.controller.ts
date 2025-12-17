@@ -5,17 +5,25 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { FileUploadHelper } from "../../../helpers/fileUploadHelpers";
 import ApiError from "../../../errors/ApiError";
+import { Types } from "mongoose";
 
 const createCollege = catchAsync(async (req: Request, res: Response) => {
-  // Handle image upload
+  // Handle college image upload
   let collegeImage;
   let collegeImage_key;
 
   if (req.files && 'image' in req.files) {
     const imageFile = req.files['image'][0];
     const uploadResult = await FileUploadHelper.uploadToSpaces(imageFile);
-    collegeImage = uploadResult?.Location;
-    collegeImage_key = uploadResult?.Key;
+
+    if (!uploadResult?.Location || !uploadResult?.Key) {
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'College image upload failed');
+    }
+
+    collegeImage = uploadResult.Location;
+    collegeImage_key = uploadResult.Key;
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'College image is required');
   }
 
   // Parse JSON data
@@ -26,30 +34,40 @@ const createCollege = catchAsync(async (req: Request, res: Response) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid JSON in 'data' field");
   }
 
-  // Prepare college data with proper date conversions
-  const collegeData = {
-    ...parsedData,
-    image: {
-      location: collegeImage || '',
-      key: collegeImage_key || '',
-    },
-    admissionDates: {
-      startDate: new Date(parsedData.admissionDates.startDate),
-      endDate: new Date(parsedData.admissionDates.endDate),
-      session: parsedData.admissionDates.session,
-    },
-    events: parsedData.events.map((event: any) => ({
-      ...event,
-      date: new Date(event.date),
-    })),
-    researchHistory: parsedData.researchHistory.map((research: any) => ({
-      ...research,
-      publicationDate: new Date(research.publicationDate),
-    })),
+  // Process events with date conversion
+  const events = (parsedData.events || []).map((event: any) => ({
+    ...event,
+    date: new Date(event.date),
+  }));
+
+  // Process research history with date and ObjectId conversion
+  const researchHistory = (parsedData.researchHistory || []).map((research: any) => ({
+    ...research,
+    authors: (research.authors || []).map((id: string) => new Types.ObjectId(id)),
+    publicationDate: new Date(research.publicationDate),
+  }));
+
+  // Process admission dates
+  const admissionDates = {
+    startDate: new Date(parsedData.admissionDates.startDate),
+    endDate: new Date(parsedData.admissionDates.endDate),
+    session: parsedData.admissionDates.session,
   };
 
+  // Prepare college payload
+  const collegePayload = {
+    ...parsedData,
+    events,
+    researchHistory,
+    admissionDates,
+  };
 
-  const result = await CollegeService.createCollege(collegeData);
+  // Create college with image
+  const result = await CollegeService.createCollege(
+    collegePayload,
+    collegeImage,
+    collegeImage_key
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

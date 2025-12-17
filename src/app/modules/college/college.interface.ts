@@ -15,7 +15,6 @@ export interface ICollege {
   events: IEvent[];
   researchHistory: IResearch[];
   sports: ISport[];
-  numberOfResearch: number; 
   location: {
     city: string;
     country: string;
@@ -33,10 +32,6 @@ export interface IEvent {
   description: string;
   date: Date;
   venue: string;
-  image?: {
-    location: string;
-    key: string;
-  };
   category: 'cultural' | 'academic' | 'sports' | 'technical' | 'other';
 }
 
