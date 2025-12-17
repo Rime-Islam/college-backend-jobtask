@@ -9,7 +9,8 @@ const app: Application = express();
 
 const corsOptions = {
   origin: [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://college-frontend-jobtask.vercel.app"
   ],
   credentials: true,
 };
@@ -25,6 +26,17 @@ app.get("/", (_req, res) => {
   res.send("Server is running 🚀");
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+  });
+});
 // app.use(globalErrorHandler);
 
 export default app;
