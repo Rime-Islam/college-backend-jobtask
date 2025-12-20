@@ -64,10 +64,79 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const GoogleLogin = catchAsync(async (req: Request, res: Response) => {
+  const { accessToken, refreshToken, user } = await AuthService.googleLogin(
+    req.body
+  );
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: true,
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User logged in successfully!",
+    data: { user, accessToken },
+  });
+});
+
+const changePassword = catchAsync(async (req, res) => {
+  const user = req.user;
+  const email = user?.email;
+
+  const { oldPassword, newPassword } = req.body;
+
+  const result = await AuthService.changePassword(
+    email as string,
+    oldPassword,
+    newPassword
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password changed successfully",
+    data: result,
+  });
+});
+
+const getProfile = catchAsync(async (req, res) => {
+  const user = req.user;
+
+  const result = await AuthService.getUserProfile(user?._id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password changed successfully",
+    data: result,
+  });
+});
+
+const updateProfile = catchAsync(async (req, res) => {
+  const user = req.user;
+  const payload = req.body;
+
+  const result = await AuthService.updateUserById(user?._id, payload);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile updated successfully",
+    data: result,
+  });
+});
+
 export const AuthController = {
   registerUser,
   loginUser,
   userForgetPassword,
   userResetPassword,
   logoutUser,
+  GoogleLogin,
+  changePassword,
+  getProfile,
+  updateProfile,
 };

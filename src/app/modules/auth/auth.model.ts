@@ -22,6 +22,10 @@ const UserSchema = new Schema<IUsers>(
       trim: true,
     },
 
+    phone: {
+      type: String,
+    },
+
     password: {
       type: String,
       required: true,
@@ -54,7 +58,9 @@ UserSchema.statics.isPasswordMatched = async function (
   plainTextPassword: string,
   hashTextPassword: string
 ) {
-  return bcryptjs.compare(plainTextPassword, hashTextPassword);
+ 
+  const match = await bcryptjs.compare(plainTextPassword, hashTextPassword);
+    return match;
 };
 
 UserSchema.statics.updatePassword = async function (

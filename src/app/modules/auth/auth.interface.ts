@@ -3,6 +3,7 @@ import { Model } from "mongoose";
 export interface IUsers {
   name: string;
   email: string;
+  phone: string;
   password: string;
   role: "admin" | "student";
   profileImage?: {
