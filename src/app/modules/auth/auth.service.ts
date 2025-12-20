@@ -81,8 +81,8 @@ const forgetPassword = async (payload: TUserSignin) => {
     config.jwt_access_token as string,
     "7d"
   );
+try {
   const token = `${accessToken}`;
-
   const url = config.URL;
   const URL = `${url}/auth/reset-password/${id}/${token}`;
 
@@ -91,6 +91,10 @@ const forgetPassword = async (payload: TUserSignin) => {
   return {
     email,
   };
+} catch (error) {
+  console.error('Error sending reset password email:', error);
+  throw error; 
+}
 };
 
 const userPasswordReset = async (payload: {

@@ -10,7 +10,6 @@ const route_1 = __importDefault(require("./route"));
 const app = (0, express_1.default)();
 const corsOptions = {
     origin: [
-        "http://localhost:5173",
         "https://college-frontend-jobtask.vercel.app"
     ],
     credentials: true,

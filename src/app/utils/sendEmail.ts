@@ -14,13 +14,16 @@ export const transporter = nodemailer.createTransport({
     }
 });
 
-// Generic function to send email
+
 export const sendEmail = async (mailOptions: any) => {
-    try {
-     await transporter.sendMail(mailOptions);
-    } catch (error) {
-        throw error;
-    }
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', info.messageId);
+    return info;
+  } catch (error: any) {
+    console.error('Error sending email:', error);
+    throw new Error(`Failed to send email: ${error.message}`);
+  }
 };
 
 // reset password Email Template
@@ -59,5 +62,5 @@ export const resetPasswordEmail = async (email: string, URL: string) => {
               </div>
               `
     };
-    sendEmail(mailOptions);
+   await sendEmail(mailOptions);
 };

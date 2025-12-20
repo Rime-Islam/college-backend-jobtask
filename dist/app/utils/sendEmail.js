@@ -16,13 +16,15 @@ exports.transporter = nodemailer_1.default.createTransport({
         pass: config_1.default.password
     }
 });
-// Generic function to send email
 const sendEmail = async (mailOptions) => {
     try {
-        await exports.transporter.sendMail(mailOptions);
+        const info = await exports.transporter.sendMail(mailOptions);
+        console.log('Email sent successfully:', info.messageId);
+        return info;
     }
     catch (error) {
-        throw error;
+        console.error('Error sending email:', error);
+        throw new Error(`Failed to send email: ${error.message}`);
     }
 };
 exports.sendEmail = sendEmail;
@@ -62,6 +64,6 @@ const resetPasswordEmail = async (email, URL) => {
               </div>
               `
     };
-    (0, exports.sendEmail)(mailOptions);
+    await (0, exports.sendEmail)(mailOptions);
 };
 exports.resetPasswordEmail = resetPasswordEmail;

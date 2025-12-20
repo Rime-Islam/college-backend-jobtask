@@ -57,13 +57,19 @@ const forgetPassword = async (payload) => {
         role: user.role,
     };
     const accessToken = jwtHelpers_1.jwtHelpers.createToken(jwtPayload, config_1.default.jwt_access_token, "7d");
-    const token = `${accessToken}`;
-    const url = config_1.default.URL;
-    const URL = `${url}/auth/reset-password/${id}/${token}`;
-    await (0, sendEmail_1.resetPasswordEmail)(email, URL);
-    return {
-        email,
-    };
+    try {
+        const token = `${accessToken}`;
+        const url = config_1.default.URL;
+        const URL = `${url}/auth/reset-password/${id}/${token}`;
+        await (0, sendEmail_1.resetPasswordEmail)(email, URL);
+        return {
+            email,
+        };
+    }
+    catch (error) {
+        console.error('Error sending reset password email:', error);
+        throw error;
+    }
 };
 const userPasswordReset = async (payload) => {
     const user = await auth_model_1.Users.findOne({ _id: payload.userId });
