@@ -83,9 +83,6 @@ const CollegeSchema = new mongoose_1.Schema({
     },
     rating: {
         type: Number,
-        required: true,
-        min: 0,
-        max: 5,
     },
     admissionDates: {
         startDate: { type: Date, required: true },

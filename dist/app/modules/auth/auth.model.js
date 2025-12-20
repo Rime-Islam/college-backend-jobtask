@@ -19,6 +19,9 @@ const UserSchema = new mongoose_1.Schema({
         unique: true,
         trim: true,
     },
+    phone: {
+        type: String,
+    },
     password: {
         type: String,
         required: true,
@@ -41,7 +44,8 @@ UserSchema.statics.isUserExist = async function (email) {
     return this.findOne({ email }).select("+password");
 };
 UserSchema.statics.isPasswordMatched = async function (plainTextPassword, hashTextPassword) {
-    return bcryptjs_1.default.compare(plainTextPassword, hashTextPassword);
+    const match = await bcryptjs_1.default.compare(plainTextPassword, hashTextPassword);
+    return match;
 };
 UserSchema.statics.updatePassword = async function (id, password) {
     const hashedPassword = await bcryptjs_1.default.hash(password, Number(config_1.default.bcrypt_salt_rounds));

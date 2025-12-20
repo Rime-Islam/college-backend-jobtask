@@ -37,7 +37,7 @@ export const isAuth =
             .split(";")
             .find((c) => c.trim().startsWith("refreshToken="))
             ?.split("=")[1]);
-      console.log("token", authToken);
+      // console.log("token", authToken);
       if (!authToken) {
         return sendResponse(res, {
           statusCode: httpStatus.UNAUTHORIZED, // 401 is more appropriate

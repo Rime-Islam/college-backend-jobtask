@@ -4,7 +4,8 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-  const review = await ReviewService.createReview(req.body);
+  const user = req.user;
+  const review = await ReviewService.createReview(user?._id, req.body);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -23,16 +24,6 @@ const getAllReviews = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getReviewById = catchAsync(async (req: Request, res: Response) => {
-  const review = await ReviewService.getReviewById(req.params.id);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Review fetched successfully",
-    data: review,
-  });
-});
-
 const getReviewsByCollege = catchAsync(async (req: Request, res: Response) => {
   const reviews = await ReviewService.getReviewsByCollege(req.params.collegeId);
   sendResponse(res, {
@@ -43,8 +34,20 @@ const getReviewsByCollege = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyReviews = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  const reviews = await ReviewService.getMyReviews(user?._id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "My reviews fetched successfully",
+    data: reviews,
+  });
+});
+
 const updateReview = catchAsync(async (req: Request, res: Response) => {
-  const review = await ReviewService.updateReview(req.params.id, req.body);
+  const user = req.user;
+  const review = await ReviewService.updateReview(req.params.id, user?._id, req.body);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -54,7 +57,8 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
-  const review = await ReviewService.deleteReview(req.params.id);
+  const user = req.user;
+  const review = await ReviewService.deleteReview(req.params.id, user?._id);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -66,8 +70,8 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
 export const ReviewController = {
   createReview,
   getAllReviews,
-  getReviewById,
   getReviewsByCollege,
+  getMyReviews,
   updateReview,
   deleteReview,
 };

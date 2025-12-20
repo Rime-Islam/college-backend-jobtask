@@ -6,7 +6,7 @@ export interface ICollege {
     location: string;
     key: string;
   }; 
-  rating: number; 
+  rating?: number; 
   admissionDates: {
     startDate: Date;
     endDate: Date;

@@ -8,7 +8,8 @@ const review_service_1 = require("./review.service");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const createReview = (0, catchAsync_1.default)(async (req, res) => {
-    const review = await review_service_1.ReviewService.createReview(req.body);
+    const user = req.user;
+    const review = await review_service_1.ReviewService.createReview(user?._id, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
         success: true,
@@ -25,15 +26,6 @@ const getAllReviews = (0, catchAsync_1.default)(async (req, res) => {
         data: reviews,
     });
 });
-const getReviewById = (0, catchAsync_1.default)(async (req, res) => {
-    const review = await review_service_1.ReviewService.getReviewById(req.params.id);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: "Review fetched successfully",
-        data: review,
-    });
-});
 const getReviewsByCollege = (0, catchAsync_1.default)(async (req, res) => {
     const reviews = await review_service_1.ReviewService.getReviewsByCollege(req.params.collegeId);
     (0, sendResponse_1.default)(res, {
@@ -43,8 +35,19 @@ const getReviewsByCollege = (0, catchAsync_1.default)(async (req, res) => {
         data: reviews,
     });
 });
+const getMyReviews = (0, catchAsync_1.default)(async (req, res) => {
+    const user = req.user;
+    const reviews = await review_service_1.ReviewService.getMyReviews(user?._id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "My reviews fetched successfully",
+        data: reviews,
+    });
+});
 const updateReview = (0, catchAsync_1.default)(async (req, res) => {
-    const review = await review_service_1.ReviewService.updateReview(req.params.id, req.body);
+    const user = req.user;
+    const review = await review_service_1.ReviewService.updateReview(req.params.id, user?._id, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -53,7 +56,8 @@ const updateReview = (0, catchAsync_1.default)(async (req, res) => {
     });
 });
 const deleteReview = (0, catchAsync_1.default)(async (req, res) => {
-    const review = await review_service_1.ReviewService.deleteReview(req.params.id);
+    const user = req.user;
+    const review = await review_service_1.ReviewService.deleteReview(req.params.id, user?._id);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -64,8 +68,8 @@ const deleteReview = (0, catchAsync_1.default)(async (req, res) => {
 exports.ReviewController = {
     createReview,
     getAllReviews,
-    getReviewById,
     getReviewsByCollege,
+    getMyReviews,
     updateReview,
     deleteReview,
 };

@@ -1,13 +1,36 @@
 import { Router } from "express";
 import { ReviewController } from "./review.controller";
+import { isAuth } from "../../middlewares/isAuth.middleware";
+import { ENUM_USER_ROLE } from "../../../enum/enum";
 
 const router = Router();
 
-router.post("/", ReviewController.createReview);
+router.post(
+  "/", 
+  isAuth(ENUM_USER_ROLE.STUDENT, ENUM_USER_ROLE.ADMIN), 
+  ReviewController.createReview
+);
+
 router.get("/", ReviewController.getAllReviews);
-router.get("/:id", ReviewController.getReviewById);
+
+router.get(
+  "/my-reviews", 
+  isAuth(ENUM_USER_ROLE.STUDENT, ENUM_USER_ROLE.ADMIN), 
+  ReviewController.getMyReviews
+);
+
 router.get("/college/:collegeId", ReviewController.getReviewsByCollege);
-router.patch("/:id", ReviewController.updateReview);
-router.delete("/:id", ReviewController.deleteReview);
+
+router.patch(
+  "/:id", 
+  isAuth(ENUM_USER_ROLE.STUDENT, ENUM_USER_ROLE.ADMIN), 
+  ReviewController.updateReview
+);
+
+router.delete(
+  "/:id", 
+  isAuth(ENUM_USER_ROLE.STUDENT, ENUM_USER_ROLE.ADMIN), 
+  ReviewController.deleteReview
+);
 
 export const ReviewRoutes = router;

@@ -98,9 +98,6 @@ const CollegeSchema = new Schema<ICollege>(
 
     rating: {
       type: Number,
-      required: true,
-      min: 0,
-      max: 5,
     },
 
     admissionDates: {

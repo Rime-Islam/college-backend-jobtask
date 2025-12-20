@@ -57,10 +57,60 @@ const logoutUser = (0, catchAsync_1.default)(async (req, res) => {
         data: "",
     });
 });
+const GoogleLogin = (0, catchAsync_1.default)(async (req, res) => {
+    const { accessToken, refreshToken, user } = await auth_service_1.AuthService.googleLogin(req.body);
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+    });
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User logged in successfully!",
+        data: { user, accessToken },
+    });
+});
+const changePassword = (0, catchAsync_1.default)(async (req, res) => {
+    const user = req.user;
+    const email = user?.email;
+    const { oldPassword, newPassword } = req.body;
+    const result = await auth_service_1.AuthService.changePassword(email, oldPassword, newPassword);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Password changed successfully",
+        data: result,
+    });
+});
+const getProfile = (0, catchAsync_1.default)(async (req, res) => {
+    const user = req.user;
+    const result = await auth_service_1.AuthService.getUserProfile(user?._id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Password changed successfully",
+        data: result,
+    });
+});
+const updateProfile = (0, catchAsync_1.default)(async (req, res) => {
+    const user = req.user;
+    const payload = req.body;
+    const result = await auth_service_1.AuthService.updateUserById(user?._id, payload);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Profile updated successfully",
+        data: result,
+    });
+});
 exports.AuthController = {
     registerUser,
     loginUser,
     userForgetPassword,
     userResetPassword,
     logoutUser,
+    GoogleLogin,
+    changePassword,
+    getProfile,
+    updateProfile,
 };

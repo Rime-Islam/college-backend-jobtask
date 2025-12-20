@@ -11,6 +11,7 @@ const config_1 = __importDefault(require("../../../config"));
 const jwtHelpers_1 = require("../../../helpers/jwtHelpers");
 const sendEmail_1 = require("../../utils/sendEmail");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const mongoose_1 = require("mongoose");
 const register = async (payload) => {
     const user = await auth_model_1.Users.findOne({ email: payload.email });
     if (user) {
@@ -50,7 +51,6 @@ const forgetPassword = async (payload) => {
         throw new ApiError_1.default(http_status_1.default.CONFLICT, "User not exists!");
     }
     const id = user._id;
-    const name = user.name;
     const email = user.email;
     const jwtPayload = {
         email: user.email,
@@ -89,9 +89,90 @@ const userPasswordReset = async (payload) => {
         throw new ApiError_1.default(http_status_1.default.CONFLICT, "Invalid or expired access token!");
     }
 };
+const googleLogin = async (payload) => {
+    const user = await auth_model_1.Users.isUserExist(payload.email);
+    if (user) {
+        const isPasswordMatched = await auth_model_1.Users.isPasswordMatched(payload.password, user.password);
+        if (isPasswordMatched) {
+            const jwtPayload = {
+                email: user.email,
+                role: user.role,
+            };
+            const accessToken = jwtHelpers_1.jwtHelpers.createToken(jwtPayload, config_1.default.jwt_access_token, "7d");
+            const refreshToken = jwtHelpers_1.jwtHelpers.createToken(jwtPayload, config_1.default.jwt_refresh_token, "1y");
+            return {
+                accessToken,
+                refreshToken,
+                user,
+            };
+        }
+        else {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, "Invalid credentials!");
+        }
+    }
+    const hashedPassword = await bcrypt_1.default.hash(payload.password, 10);
+    const newUser = await auth_model_1.Users.create({
+        ...payload,
+        password: hashedPassword,
+    });
+    const jwtPayload = {
+        email: newUser.email,
+        role: newUser.role,
+    };
+    const accessToken = jwtHelpers_1.jwtHelpers.createToken(jwtPayload, config_1.default.jwt_access_token, "7d");
+    const refreshToken = jwtHelpers_1.jwtHelpers.createToken(jwtPayload, config_1.default.jwt_refresh_token, "1y");
+    return {
+        accessToken,
+        refreshToken,
+        user: newUser
+    };
+};
+const changePassword = async (email, currentPassword, newPassword) => {
+    const user = await auth_model_1.Users.isUserExist(email);
+    if (!user) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+    }
+    const isPasswordMatched = await auth_model_1.Users.isPasswordMatched(currentPassword, user.password);
+    if (!isPasswordMatched) {
+        throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Current password is incorrect');
+    }
+    const hashedPassword = await bcrypt_1.default.hash(newPassword, 10);
+    const updatedUser = await auth_model_1.Users.findOneAndUpdate({ email }, { password: hashedPassword }, { new: true }).select('-password -__v -otp');
+    if (!updatedUser) {
+        throw new ApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Password update failed');
+    }
+    return { updatedUser };
+};
+const getUserProfile = async (id) => {
+    if (!mongoose_1.Types.ObjectId.isValid(id)) {
+        throw new Error("Invalid user id");
+    }
+    const user = await auth_model_1.Users.findById(id).select("-password");
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user;
+};
+const updateUserById = async (id, payload) => {
+    if (!mongoose_1.Types.ObjectId.isValid(id)) {
+        throw new Error("Invalid user id");
+    }
+    const updatedUser = await auth_model_1.Users.findByIdAndUpdate(id, { $set: payload }, {
+        new: true,
+        runValidators: true,
+    }).select("-password");
+    if (!updatedUser) {
+        throw new Error("User not found");
+    }
+    return updatedUser;
+};
 exports.AuthService = {
     register,
     loginUser,
     forgetPassword,
     userPasswordReset,
+    googleLogin,
+    changePassword,
+    getUserProfile,
+    updateUserById,
 };
